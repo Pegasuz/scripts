@@ -1,2 +1,2 @@
 #!/bin/bash
-pgrep evolution | xargs sudo kill -9
+sudo pgrep evolution | xargs sudo kill -9
