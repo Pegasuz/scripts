@@ -32,16 +32,22 @@ _hosts_action_grep() {
 }
 
 _hosts_action_add() {
-	echo $1 $2 | sudo tee -a /etc/hosts
-	return $?
+   rx='([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+   ip="$1"
+   if ! [[ "$ip" =~ ^$rx\.$rx\.$rx\.$rx$ ]]; then
+      echo "$ip is not a valid ip adress"
+      return $?
+   fi
+   echo $@ | sudo tee -a /etc/hosts
+        return $?
 }
 
 
-case ${1:-edit} in
+case "$1" in
   edit) _hosts_action_edit;;
   list) _hosts_action_list;;
   grep) _hosts_action_grep "$2";;
-  add) _hosts_action_add "$2 $3";;
+  add) shift; _hosts_action_add "$@";;
   *)    _hosts_usage;;
 esac
 
