@@ -1,0 +1,23 @@
+#!/bin/bash
+
+IFS_OLD="$IFS"
+IFS=$'\n'
+HOST="$1"
+[[ "$HOST" =~ [a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]*\.[a-z]*$ ]] && DOM=$BASH_REMATCH
+echo SOA
+for i in $(dig @8.8.8.8 SOA "$DOM" +short); do echo "   " ${i%.*}; done
+echo
+echo NS
+for i in $(dig @8.8.8.8 NS "$DOM" +short); do echo "   " $i; done
+echo
+echo A/CNAME
+for i in $(dig @8.8.8.8 "$HOST" +answer | egrep -v '^;' | grep IN); do echo "   " $i; done
+echo
+echo PTR
+echo "   " $(nslookup $(dig @8.8.8.8 "$HOST" +answer | egrep -v '^;' | grep IN | tail -1 | awk '{ print $5 '}) | grep name)
+echo
+echo MX
+for i in $(dig @8.8.8.8 MX "$DOM" +short); do echo "   " $i; done
+echo
+echo redirect
+wget -O /dev/null "$HOST" 2>&1 | grep -B1 -i fol
