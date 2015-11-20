@@ -41,6 +41,7 @@ _hosts_action_add() {
         return $?
     fi
     echo $@ | sudo tee -a /etc/hosts
+    xdg-open http://$2
     return $?
 }
 
